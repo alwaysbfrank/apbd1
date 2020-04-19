@@ -22,10 +22,10 @@ namespace APBD1.Controllers
             students = dbService;
         }
         
-        [HttpGet("{id}")]
-        public Student GetStudent(int id)
+        [HttpGet("{index}")]
+        public Student GetStudent(string index)
         {
-            return students.GetStudent(id);
+            return students.GetStudent(index);
         }
         
         [HttpGet]

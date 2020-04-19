@@ -5,8 +5,8 @@ namespace APBD1.DAL
 {
     public interface IDbService
     {
-        public IEnumerable<Student> GetStudents();
-        public Student GetStudent(int id);
+        public ICollection<Student> GetStudents();
+        public Student GetStudent(string index);
         public Student AddStudent(Student student);
     }
 }
