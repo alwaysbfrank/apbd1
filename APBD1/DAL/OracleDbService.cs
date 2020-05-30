@@ -31,7 +31,6 @@ namespace APBD1.DAL
             result.Index = reader["IndexNumber"].ToString();
             result.FirstName = reader["FirstName"].ToString();
             result.LastName = reader["LastName"].ToString();
-            result.BirthDate = reader.GetDateTime(reader.GetOrdinal("BirthDate"));
             result.IdEnrollment = reader.GetInt32(reader.GetOrdinal("IdEnrollment"));
             return result;
         }
@@ -58,13 +57,12 @@ namespace APBD1.DAL
             var currentCount = GetStudents().Count;
             student.Index = $"s{currentCount + 1}";
 
-            const string query = "INSERT INTO Student(IndexNumber, FirstName, LastName, BirthDate, IdEnrollment) VALUES (@IndexNumber, @FirstName, @LastName, @BirthDate, @IdEnrollment)";
+            const string query = "INSERT INTO Student(IndexNumber, FirstName, LastName, IdEnrollment) VALUES (@IndexNumber, @FirstName, @LastName, @IdEnrollment)";
             var parameters = new List<OracleParameter>()
             {
                 new OracleParameter("@IndexNumber", student.Index),
                 new OracleParameter("@FirstNAme", student.FirstName),
                 new OracleParameter("@LastName", student.LastName),
-                new OracleParameter("@BirthDate", student.BirthDate),
                 new OracleParameter("@IdEnrollment", student.IdEnrollment)
             };
 

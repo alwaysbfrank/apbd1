@@ -14,7 +14,6 @@ namespace APBD1.Controllers
     [Route("api/students/")]
     public class StudentsController : ControllerBase
     {
-
         private readonly IDbService students;
 
         public StudentsController(IDbService dbService)
