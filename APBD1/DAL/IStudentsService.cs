@@ -3,7 +3,7 @@ using APBD1.Models;
 
 namespace APBD1.DAL
 {
-    public interface IDbService
+    public interface IStudentsService
     {
         public ICollection<Student> GetStudents();
         public Student GetStudent(string index);

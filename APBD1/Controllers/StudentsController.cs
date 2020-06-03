@@ -14,11 +14,11 @@ namespace APBD1.Controllers
     [Route("api/students/")]
     public class StudentsController : ControllerBase
     {
-        private readonly IDbService students;
+        private readonly IStudentsService students;
 
-        public StudentsController(IDbService dbService)
+        public StudentsController(IStudentsService studentsService)
         {
-            students = dbService;
+            students = studentsService;
         }
         
         [HttpGet("{index}")]

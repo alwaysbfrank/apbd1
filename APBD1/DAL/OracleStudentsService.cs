@@ -10,7 +10,7 @@ using APBD1.Models;
 
 namespace APBD1.DAL
 {
-    public class OracleDbService : IDbService
+    public class OracleStudentsService : IStudentsService
     {
         public ICollection<Student> GetStudents()
         {
