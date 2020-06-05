@@ -32,7 +32,17 @@ FOREIGN KEY (IdEnrollment) REFERENCES Enrollment (IdEnrollment)
 )";
 
         private const string INSERT_IT_STUDY = @"
-INSERT INTO Studies(Name) VALUES (@itName)
+INSERT INTO Studies(Name, IdStudy) VALUES ('IT', 1)
+";
+
+        private const string INSERT_FIRST_ENROLLMENT = @"
+INSERT INTO Enrollments(IdEnrollment, Semester, IdStudy, StartDate) 
+VALUES (1, 1, 1, '01.01.2020')
+";
+        
+        private const string INSERT_ADMIN_STUDENT = @"
+INSERT INTO STUDENTS (FirstName, LastName, IndexNumber, IdEnrollment, BirthDate)
+VALUES ('Admin', 'Admin', 's0001', 1, '01.01.1980')
 ";
 
         private readonly Guid guid;
@@ -44,11 +54,17 @@ INSERT INTO Studies(Name) VALUES (@itName)
             guid = Guid.NewGuid();
             Console.WriteLine("Creating database with guid: " + guid);
             _connectionString = "SchemaName=sdbn;datasource=file://C:\\APBD\\db"+guid+".db;";
-            ExecuteQuery(STUDIES_DDL, emptyList, con => con.ExecuteNonQuery());
-            ExecuteQuery(ENROLLMENT_DDL, emptyList, con => con.ExecuteNonQuery());
-            ExecuteQuery(STUDENTS_DDL, emptyList, con => con.ExecuteNonQuery());
-            ExecuteQuery(INSERT_IT_STUDY, new List<SqlDatabaseParameter> { new SqlDatabaseParameter("@itName", "IT") },
-                con => con.ExecuteNonQuery());
+            ExecuteNonQuery(STUDIES_DDL);
+            ExecuteNonQuery(ENROLLMENT_DDL);
+            ExecuteNonQuery(STUDENTS_DDL);
+            ExecuteNonQuery(INSERT_IT_STUDY);
+            ExecuteNonQuery(INSERT_FIRST_ENROLLMENT);
+            ExecuteNonQuery(INSERT_ADMIN_STUDENT);
+        }
+
+        private void ExecuteNonQuery(string query)
+        {
+            ExecuteQuery(query, null, con => con.ExecuteNonQuery());
         }
         
         public SqlDatabaseDataReader ExecuteReadQuery(string query)

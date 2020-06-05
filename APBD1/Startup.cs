@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using APBD1.DAL;
+using APBD1.Middleware;
 using APBD1.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -36,10 +38,12 @@ namespace APBD1
             {
                 options.JsonSerializerOptions.Converters.Add(new DateTimeParsing.Converter());
             });
+            
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IStudentsService studentsService)
         {
             if (env.IsDevelopment())
             {
@@ -51,8 +55,38 @@ namespace APBD1
             app.UseRouting();
 
             app.UseAuthorization();
+            
+            app.UseMyMiddleware();
+            
+            app.Use(async (context, next) =>
+            {
+                if (!context.Request.Headers.ContainsKey("Index"))
+                {
+                    await FailedValidation(context);
+                }
+
+                string index = context.Request.Headers["Index"].ToString();
+
+                try
+                {
+                    studentsService.GetStudent(index);
+                }
+                catch
+                {
+                    await FailedValidation(context);
+                }
+
+                await next();
+            });
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+        }
+
+        private async Task FailedValidation(HttpContext httpContext)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            await httpContext.Response.WriteAsync("Nie podałeś indeksu");
         }
     }
 }

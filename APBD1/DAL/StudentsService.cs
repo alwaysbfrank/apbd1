@@ -45,7 +45,7 @@ namespace APBD1.DAL
 
         public Student GetStudent(string index)
         {
-            var query = $"SELECT * FROM Student WHERE IndexNumber = @IndexNumber";
+            var query = $"SELECT * FROM Students WHERE IndexNumber = @IndexNumber";
             List<SqlDatabaseParameter> parameters = new List<SqlDatabaseParameter>()
             {
                 new SqlDatabaseParameter("@IndexNumber", index)
