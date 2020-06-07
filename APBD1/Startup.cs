@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using APBD1.Authentication;
 using APBD1.DAL;
 using APBD1.Middleware;
 using APBD1.Utils;
@@ -14,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace APBD1
 {
@@ -34,6 +38,23 @@ namespace APBD1
             services.AddSingleton<EnrollmentsService>();
             services.AddSingleton<StudiesService>();
             services.AddSingleton<FullStudentService>();
+            services.AddSingleton<JwtAuthDao>();
+            services.AddSingleton<AuthenticationService>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidIssuer = Configuration["TokenIssuer"],
+                        ValidAudience = "Students",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]))
+                    };
+                });
+            
             services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new DateTimeParsing.Converter());
@@ -53,12 +74,12 @@ namespace APBD1
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            
             app.UseAuthorization();
             
-            app.UseMyMiddleware();
+            //app.UseMyMiddleware();
             
-            app.Use(async (context, next) =>
+            /*app.Use(async (context, next) =>
             {
                 if (!context.Request.Headers.ContainsKey("Index"))
                 {
@@ -77,7 +98,7 @@ namespace APBD1
                 }
 
                 await next();
-            });
+            });*/
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 

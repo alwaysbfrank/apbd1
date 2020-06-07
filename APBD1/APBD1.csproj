@@ -2,10 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <UserSecretsId>Franciszek</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="5.2.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="2.1.0" />
       <PackageReference Include="SQLDatabase.Net.dll" Version="2.0.0" />
       <PackageReference Include="System.Data.Odbc" Version="4.6.0" />
       <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />

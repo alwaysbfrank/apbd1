@@ -28,8 +28,20 @@ LastName Text,
 IndexNumber TEXT PRIMARY KEY NOT NULL,
 IdEnrollment Integer,
 BirthDate TEXT,
+Password TEXT,
 FOREIGN KEY (IdEnrollment) REFERENCES Enrollment (IdEnrollment)
 )";
+
+        private const string JWT_AUTH_DDL = @"
+CREATE TABLE IF NOT EXISTS Auth (
+IndexNumber TEXT PRIMARY KEY NOT NULL,
+Password TEXT,
+Salt Text,
+Roles Text,
+RefreshToken Text,
+FOREIGN KEY (IndexNumber) REFERENCES Students (IndexNumber)
+)
+";
 
         private const string INSERT_IT_STUDY = @"
 INSERT INTO Studies(Name, IdStudy) VALUES ('IT', 1)
@@ -41,8 +53,8 @@ VALUES (1, 1, 1, '01.01.2020')
 ";
         
         private const string INSERT_ADMIN_STUDENT = @"
-INSERT INTO STUDENTS (FirstName, LastName, IndexNumber, IdEnrollment, BirthDate)
-VALUES ('Admin', 'Admin', 's0001', 1, '01.01.1980')
+INSERT INTO STUDENTS (FirstName, LastName, IndexNumber, IdEnrollment, BirthDate, Password)
+VALUES ('Admin', 'Admin', 's0001', 1, '01.01.1980', 'admin')
 ";
 
         private readonly Guid guid;
@@ -50,7 +62,6 @@ VALUES ('Admin', 'Admin', 's0001', 1, '01.01.1980')
 
         public InMemoryDbAccessor()
         {
-            var emptyList = new List<SqlDatabaseParameter>();
             guid = Guid.NewGuid();
             Console.WriteLine("Creating database with guid: " + guid);
             _connectionString = "SchemaName=sdbn;datasource=file://C:\\APBD\\db"+guid+".db;";
@@ -60,6 +71,7 @@ VALUES ('Admin', 'Admin', 's0001', 1, '01.01.1980')
             ExecuteNonQuery(INSERT_IT_STUDY);
             ExecuteNonQuery(INSERT_FIRST_ENROLLMENT);
             ExecuteNonQuery(INSERT_ADMIN_STUDENT);
+            ExecuteNonQuery(JWT_AUTH_DDL);
         }
 
         private void ExecuteNonQuery(string query)
