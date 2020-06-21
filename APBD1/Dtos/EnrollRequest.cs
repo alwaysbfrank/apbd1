@@ -6,8 +6,6 @@ namespace APBD1.Dtos
     public class EnrollRequest
     {
         [Required]
-        public string IndexNumber { get; set; }
-        [Required]
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }

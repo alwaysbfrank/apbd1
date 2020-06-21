@@ -1,81 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using APBD1.Authentication;
-using APBD1.DAL;
+using System.Text;
 using APBD1.Dtos;
-using APBD1.Models;
+using APBD1.Dtos.Ef;
+using APBD1.EfModels;
+using APBD1.EfServices;
 using APBD1.Utils;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 
 namespace APBD1.Controllers
 {
-    
     [ApiController]
-    [Route("api/students/")]
-    public class StudentsController : ControllerBase
+    [Route("api/students")]
+    class StudentsController : ControllerBase
     {
-        private readonly IStudentsService _students;
-        private readonly AuthenticationService _auth;
 
-        public StudentsController(IStudentsService students, AuthenticationService auth)
+        private readonly StudentsService _students;
+
+        public StudentsController(StudentsService students)
         {
             _students = students;
-            _auth = auth;
         }
 
-        [HttpGet("{index}")]
-        public Student GetStudent(string index)
-        {
-            return _students.GetStudent(index);
-        }
-        
         [HttpGet]
-        public IEnumerable<Student> GetStudents()
+        public IActionResult GetAll()
         {
-            return _students.GetStudents();
+            var allStudents = _students.GetAllStudents();
+            ("returning " + allStudents.Count + " students").Log();
+            return Ok(allStudents);
+        }
+
+        [HttpPut]
+        [Route("/{index}")]
+        public IActionResult UpdateStudent(string index, StudentRequest request)
+        {
+            return Return(_students.UpdateStudent(index, request));
+        }
+
+        private IActionResult Return(bool result)
+        {
+            if (result)
+            {
+                return NoContent();
+            }
+
+            return BadRequest();
+        }
+
+        [HttpDelete]
+        [Route("/{index}")]
+        public IActionResult DeleteStudent(string index)
+        {
+            return Return(_students.RemoveStudent(index));
         }
 
         [HttpPost]
-        public IActionResult CreateStudent(Student request)
+        public IActionResult Enroll(EnrollRequest request)
         {
-            return Ok(_students.AddStudent(request));
+            return Return(_students.EnrollStudent(request));
         }
 
-        [HttpPost]
-        [Route("{index}/login")]
-        public IActionResult Login(string index, Password password)
-        {
-            try
-            {
-                return Ok(_auth.Login(index, password.Pass));
-            }
-            catch (Exception ex)
-            {
-                "Exception while logging in".Log();
-                ex.Message.Log();
-                ex.StackTrace.Log();
-                return Unauthorized(); //Forbidden? Bad Request?
-            }
-        }
-
-        [HttpPost]
-        [Route("{index}/login/refresh")]
-        public IActionResult RefreshLogin(string index, string refreshToken)
-        {
-            try
-            {
-                return Ok(_auth.RefreshToken(index, refreshToken));
-            }
-            catch (Exception ex)
-            {
-                "Exception while refreshing login".Log();
-                ex.Message.Log();
-                ex.StackTrace.Log();
-                return Unauthorized(); //Forbidden? Bad Request?
-            }
-        }
     }
 }
